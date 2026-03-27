@@ -1,6 +1,8 @@
 public class AddAction : Action
 {
-    public override string Name => "Добавление";
+    public AddAction() : base("Добавление")
+    {
+    }
     public override void Execute()
     {
         
