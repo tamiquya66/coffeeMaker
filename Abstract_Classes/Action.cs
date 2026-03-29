@@ -7,10 +7,10 @@ public abstract class Action : Element
     {
         Name = name;
     }
+    public abstract void Display(int i = 0);
     public abstract void Execute();
-    
-    public void AddMessage()
+    public void AddMessage(int i = 0) // 1st thing that appears when user adding
     {
-        Console.WriteLine($"Успешно добавлено действие {Name}");
+        Console.WriteLine($"Действие: {Name}");
     }
 }

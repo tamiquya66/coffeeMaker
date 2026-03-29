@@ -7,6 +7,7 @@ namespace DrinkApp{
     {
         static void Main()
         {
+            Console.Clear();
             Console.WriteLine("Введите название для напитка");
             string? name = Console.ReadLine();
             Drink currentDrink = new Drink(name);

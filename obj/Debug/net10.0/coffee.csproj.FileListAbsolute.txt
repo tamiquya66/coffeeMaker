@@ -12,3 +12,4 @@
 /home/tami_qya/projects/dotnet/coffee/obj/Debug/net10.0/coffee.pdb
 /home/tami_qya/projects/dotnet/coffee/obj/Debug/net10.0/coffee.genruntimeconfig.cache
 /home/tami_qya/projects/dotnet/coffee/obj/Debug/net10.0/ref/coffee.dll
+/home/tami_qya/projects/dotnet/coffee/obj/Debug/net10.0/coffee.sourcelink.json

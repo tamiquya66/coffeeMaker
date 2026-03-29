@@ -44,22 +44,9 @@ namespace DrinkApp{
                 Console.WriteLine($"{el}, ");
             }
         }
-        public void AddIngredient(Drink drink, IngredientType type)
+        public void AddIngredient(Ingredient ingredient)
         {
-            Console.Clear();
-            Console.WriteLine("Введите вес нетто");
-            string? input = Console.ReadLine();
-
-            decimal weight;
-            while (!decimal.TryParse(input, out weight) && weight < 0){
-                Console.WriteLine("Некорректный ввод");
-            }
-
-            Ingredient ingredient = Ingredient.Create(type, weight);
-            AddElement(ingredient);
-            Console.WriteLine($"Успешно добавлен {ingredient.Name}");
-            Console.WriteLine("\nВведите любое число");
-            Console.ReadLine();
+            AddElement(new AddAction(ingredient));
         }
         public void AddAction(Drink drink, ActionType type)
         {

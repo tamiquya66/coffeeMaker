@@ -8,6 +8,9 @@ public abstract class Ingredient : Element
         Name = name;
         NetWeight = netWeight;
     }
+    public abstract void Display(int i = 0); // for a recipe work
+    public abstract void AddMessage(int i = 0); // add message; 2nd thing
+    public abstract void Execute(); // some action on ingredient i guess
     public static Ingredient Create(IngredientType type, decimal weight)
     {
         switch (type)
@@ -26,8 +29,5 @@ public abstract class Ingredient : Element
                 throw new ArgumentException("Неизвестный тип ингредиента");
         }
     }
-    public void AddMessage()
-    {
-        Console.WriteLine($"Успешно добавлен ингредиент {Name} ({NetWeight})");
-    }
+    public virtual void GetParametersFromUser() {}
 }

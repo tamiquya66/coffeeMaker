@@ -5,5 +5,32 @@ public class Milk : Ingredient
     {
         FatLevel = fatlevel;
     }
-    public override string Name => "Молоко";
+    public override void AddMessage(int i = 0)
+    {
+        string padding = new string(' ', i * 2);
+        Console.WriteLine($"\n{padding} {Name} ({FatLevel}): {NetWeight}мл");
+    }
+    public override void Display(int i = 0)
+    {
+    }
+    public override void Execute()
+    {
+    }
+    public override void GetParametersFromUser()
+    {
+        Console.WriteLine("Выберите степень обжарки:");
+        Console.WriteLine("1. 1.6%");
+        Console.WriteLine("2. 3.2%");
+        Console.WriteLine("3. 6.0%");
+        Console.Write("Ваш выбор (1-3): ");
+        
+        string? choice = Console.ReadLine();
+        FatLevel = choice switch
+        {
+            "1" => "1.6%",
+            "2" => "3.2%",
+            "3" => "6.0%",
+            _ => "3.2%"
+        };
+    }
 }

@@ -35,11 +35,37 @@ public class MainPage
                 case "0":
                     return;
                 default:
-                    throw new ArgumentException("Некорректный выбор");
+                    Console.WriteLine("Некорректный выбор");
+                    Console.ReadLine();
+                    break;
             }
         }
     }
+    private static string GetIngredientName(IngredientType type)
+    {
+        switch (type)
+        {
+            case IngredientType.Coffee: return "Кофе";
+            case IngredientType.Ice: return "Лёд";
+            case IngredientType.Milk: return "Молоко";
+            case IngredientType.Syrup: return "Сироп";
+            case IngredientType.Water: return "Вода";
+            default: return "Неизвестно";
+        }
+    }
 
+    private static string GetActionName(ActionType type)
+    {
+        switch (type)
+        {
+            case ActionType.Beat: return "Взбить";
+            case ActionType.Boil: return "Вскипятить";
+            case ActionType.Grind: return "Перемолоть";
+            case ActionType.Mix: return "Перемешать";
+            case ActionType.Pour: return "Пролить";
+            default: return "Неизвестно";
+        }
+    }
     public static void IngredientMenu(Drink drink)
     {
         while (true)
@@ -59,26 +85,52 @@ public class MainPage
             switch (choice)
             {
                 case "1":
-                    drink.AddIngredient(drink, IngredientType.Water);
+                    AddIngredient(drink, IngredientType.Water);
                     break;
                 case "2":
-                    drink.AddIngredient(drink, IngredientType.Syrup);
+                    AddIngredient(drink, IngredientType.Syrup);
                     break;
                 case "3":
-                    drink.AddIngredient(drink, IngredientType.Coffee);
+                    AddIngredient(drink, IngredientType.Coffee);
                     break;
                 case "4":
-                    drink.AddIngredient(drink, IngredientType.Milk);
+                    AddIngredient(drink, IngredientType.Milk);
                     break;
                 case "5":
-                    drink.AddIngredient(drink, IngredientType.Ice);
+                    AddIngredient(drink, IngredientType.Ice);
                     break;
                 case "0":
                     return;
                 default:
-                    throw new ArgumentException("Некорректный выбор ингредиента");
+                    Console.WriteLine("Некорректный выбор");
+                    Console.ReadLine();
+                    break;
             }
         }
+    }
+    public static void AddIngredient(Drink drink, IngredientType type)
+    {
+        string name = GetIngredientName(type);
+        
+        Console.Clear();
+        Console.WriteLine($"~~~ Добавление {name} ~~~");
+        
+        Console.Write("Введите вес нетто (грамм): ");
+        if (!decimal.TryParse(Console.ReadLine(), out decimal weight) || weight <= 0)
+        {
+            Console.WriteLine("Ошибка: введите корректное число!");
+            Console.ReadLine();
+            return;
+        }
+        
+        Ingredient ingredient = Ingredient.Create(type, weight);
+        Console.Clear();
+        ingredient.GetParametersFromUser();
+        drink.AddIngredient(ingredient);
+        ingredient.AddMessage();
+        
+        Console.WriteLine("\nНажмите любую клавишу");
+        Console.ReadLine();
     }
     public static void ActionMenu(Drink drink)
     {
