@@ -9,8 +9,11 @@ public abstract class Ingredient : Element
         NetWeight = netWeight;
     }
     public abstract void Display(int i = 0); // for a recipe work
-    public abstract void AddMessage(int i = 0); // add message; 2nd thing
-    public abstract void Execute(); // some action on ingredient i guess
+    public virtual void AddMessage()
+    {
+        Console.WriteLine($"✓ Добавлен ингредиент: {Name} ({NetWeight}г)"); // / add message; 2nd thing
+    }
+    public abstract void Execute(); // add message
     public static Ingredient Create(IngredientType type, decimal weight)
     {
         switch (type)

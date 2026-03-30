@@ -24,6 +24,7 @@ public class MainPage
                     IngredientMenu(drink);
                     break;
                 case "2":
+                    ActionMenu(drink);
                     break;
                 case "3":
                     break;
@@ -58,7 +59,7 @@ public class MainPage
     {
         switch (type)
         {
-            case ActionType.Beat: return "Взбить";
+            case ActionType.Whisk: return "Взбить";
             case ActionType.Boil: return "Вскипятить";
             case ActionType.Grind: return "Перемолоть";
             case ActionType.Mix: return "Перемешать";
@@ -100,6 +101,7 @@ public class MainPage
                     AddIngredient(drink, IngredientType.Ice);
                     break;
                 case "0":
+                    Environment.Exit(0);
                     return;
                 default:
                     Console.WriteLine("Некорректный выбор");
@@ -124,10 +126,160 @@ public class MainPage
         }
         
         Ingredient ingredient = Ingredient.Create(type, weight);
-        Console.Clear();
         ingredient.GetParametersFromUser();
-        drink.AddIngredient(ingredient);
+        
+        var addAction = new AddAction(ingredient);
+        drink.AddAction(addAction);
         ingredient.AddMessage();
+        
+        Console.WriteLine("\nНажмите любую клавишу");
+        Console.ReadLine();
+    }
+    public static void AddAction(Drink drink, ActionType type)
+    {
+        string name = GetActionName(type);
+        
+        Console.Clear();
+        Console.WriteLine($"~~~ Действие {name} ~~~");
+        
+        var ingredients = drink.GetIngredients();
+        
+        if (ingredients.Count == 0)
+        {
+            Console.WriteLine("Список ингредиентов пуст");
+            Console.ReadLine();
+            return;
+        }
+        
+        Console.WriteLine("\nВыберите ингредиент для этого действия:");
+        for (int i = 0; i < ingredients.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {ingredients[i].Name} ({ingredients[i].NetWeight}г)");
+        }
+        Console.Write("Ваш выбор: ");
+        
+        if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > ingredients.Count)
+        {
+            Console.WriteLine("Неверный выбор!");
+            Console.ReadLine();
+            return;
+        }
+        
+        Ingredient selectedIngredient = ingredients[choice - 1];
+        
+        Action? action = null;
+        
+        Console.Clear();
+        switch (type)
+        {
+            case ActionType.Mix:
+                int speed = 0;
+                int duration = 0;
+                
+                while (true)
+                {
+                    Console.Write("Скорость (1-10): ");
+                    if (int.TryParse(Console.ReadLine(), out speed) && speed >= 1 && speed <= 10)
+                        break;
+                    Console.WriteLine("Ошибка: введите число от 1 до 10");
+                }
+                
+                while (true)
+                {
+                    Console.Clear();
+                    Console.Write("Время (секунд): ");
+                    if (int.TryParse(Console.ReadLine(), out duration) && duration > 0)
+                        break;
+                    Console.WriteLine("Ошибка: введите положительное число");
+                }
+                
+                action = new MixAction(selectedIngredient, speed, duration);
+                break;
+                
+            case ActionType.Boil:
+                int temp = 0;
+                int minutes = 0;
+                
+                while (true)
+                {
+                    Console.Write("Температура (°C): ");
+                    if (int.TryParse(Console.ReadLine(), out temp) && temp > 0 && temp <= 150)
+                        break;
+                    Console.WriteLine("Ошибка: введите температуру от 1 до 150");
+                }
+                
+                while (true)
+                {
+                    Console.Clear();
+                    Console.Write("Время (минут): ");
+                    if (int.TryParse(Console.ReadLine(), out minutes) && minutes > 0)
+                        break;
+                    Console.WriteLine("Ошибка: введите положительное число");
+                }
+                
+                action = new BoilAction(selectedIngredient, temp, minutes);
+                break;
+                
+            case ActionType.Pour:
+                Console.Write("Куда пролить: ");
+                string? to = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(to))
+                {
+                    Console.Write("Куда пролить (не может быть пустым): ");
+                    to = Console.ReadLine();
+                }
+                action = new PourAction(selectedIngredient, to);
+                break;
+                
+            case ActionType.Grind:
+                Console.Write("Степень помола (мелкий/средний/крупный): ");
+                string? grindSize = Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(grindSize))
+                {
+                    Console.Write("Степень помола (не может быть пустым): ");
+                    grindSize = Console.ReadLine();
+                }
+                action = new GrindAction(selectedIngredient, grindSize);
+                break;
+                
+            case ActionType.Whisk:
+                int whiskSpeed = 0;
+                int whiskDuration = 0;
+                
+                while (true)
+                {
+                    Console.Write("Скорость (1-10): ");
+                    if (int.TryParse(Console.ReadLine(), out whiskSpeed) && whiskSpeed >= 1 && whiskSpeed <= 10)
+                        break;
+                    Console.WriteLine("Ошибка: введите число от 1 до 10");
+                }
+                
+                while (true)
+                {
+                    Console.Write("Время (секунд): ");
+                    if (int.TryParse(Console.ReadLine(), out whiskDuration) && whiskDuration > 0)
+                        break;
+                    Console.WriteLine("Ошибка: введите положительное число");
+                }
+                
+                action = new WhiskAction(selectedIngredient, whiskSpeed, whiskDuration);
+                break;
+        }
+        
+        if (action != null)
+        {
+            action.Execute();
+            
+            AddAction addAction = drink.FindAddAction(selectedIngredient);
+            if (addAction != null)
+            {
+                addAction.AddElement(action);
+            }
+            else
+            {
+                Console.WriteLine($"\nОшибка: действие для {selectedIngredient.Name} не найдено");
+            }
+        }
         
         Console.WriteLine("\nНажмите любую клавишу");
         Console.ReadLine();
@@ -144,31 +296,33 @@ public class MainPage
             Console.WriteLine("4. Перемолоть");
             Console.WriteLine("5. Взбить");
             Console.WriteLine("0. Назад");
-            Console.Write("\nВыберите ингредиент: ");
+            Console.Write("\nВыберите действие: ");
             
             string? choice = Console.ReadLine();
             
             switch (choice)
             {
                 case "1":
-                    drink.AddAction(drink, ActionType.Mix);
+                    AddAction(drink, ActionType.Mix);
                     break;
                 case "2":
-                    drink.AddAction(drink, ActionType.Boil);
+                    AddAction(drink, ActionType.Boil);
                     break;
                 case "3":
-                    drink.AddAction(drink, ActionType.Pour);
+                    AddAction(drink, ActionType.Pour);
                     break;
                 case "4":
-                    drink.AddAction(drink, ActionType.Grind);
+                    AddAction(drink, ActionType.Grind);
                     break;
                 case "5":
-                    drink.AddAction(drink, ActionType.Beat);
+                    AddAction(drink, ActionType.Whisk);
                     break;
                 case "0":
                     return;
                 default:
-                    throw new ArgumentException("Некорректный выбор ингредиента");
+                    Console.WriteLine("Некорректный выбор");
+                    Console.ReadLine();
+                    break;
             }
         }
     }

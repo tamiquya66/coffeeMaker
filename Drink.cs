@@ -17,7 +17,7 @@ namespace DrinkApp{
         Boil,
         Pour,
         Grind,
-        Beat
+        Whisk
     }
     public class Drink
     {
@@ -38,20 +38,55 @@ namespace DrinkApp{
         public void DisplayRecipe()
         {
             Console.Clear();
-            Console.WriteLine("Текущий рецепт");
-            foreach(Element el in _elements)
+            Console.WriteLine($"~~~ {_name} ~~~\n");
+            
+            if (_elements.Count == 0)
             {
-                Console.WriteLine($"{el}, ");
+                Console.WriteLine("  (рецепт пуст)");
+                return;
             }
+            
+            for (int i = 0; i < _elements.Count; i++)
+            {
+                Console.Write($"{i + 1}. ");
+                _elements[i].Display(0);
+            }
+            Console.ReadLine();
         }
         public void AddIngredient(Ingredient ingredient)
         {
             AddElement(new AddAction(ingredient));
         }
-        public void AddAction(Drink drink, ActionType type)
+        public void AddAction(Action action)
         {
-            Console.Clear();
-            Console.WriteLine();
+            AddElement(action);
+        }
+        public List<Ingredient> GetIngredients()
+        {
+            List<Ingredient> ingredients = new List<Ingredient>();
+            
+            foreach (var element in _elements)
+            {
+                if (element == null) continue;
+                
+                if (element is AddAction addAction && addAction.TargetIngredient != null)
+                {
+                    ingredients.Add(addAction.TargetIngredient);
+                }
+            }
+            
+            return ingredients;
+        }
+        public AddAction FindAddAction(Ingredient ingredient)
+        {
+            foreach (var element in _elements)
+            {
+                if (element is AddAction addAction && addAction.TargetIngredient == ingredient)
+                {
+                    return addAction;
+                }
+            }
+            return null;
         }
     }
 }

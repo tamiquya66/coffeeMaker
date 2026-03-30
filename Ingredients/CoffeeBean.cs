@@ -5,20 +5,22 @@ public class CoffeeBean : Ingredient
     {
         RoastLevel = roastlevel;
     }
-    public override void AddMessage(int i = 0)
+    public override void AddMessage()
     {
-        string padding = new string(' ', i * 2);
-        Console.WriteLine($"\n{padding} {Name} (Обжарка: {RoastLevel}): {NetWeight}г");
+        Console.WriteLine($"✓ Добавлен ингредиент: Кофейные зёрна (Обжарка: {RoastLevel}): {NetWeight}г");
     }
     public override void Display(int i = 0)
     {
+        string padding = new string(' ', i * 2);
+        Console.WriteLine($"{padding}Добавить Кофейные зёрна (Обжарка: {RoastLevel}): {NetWeight}г");
     }
     public override void Execute()
     {
     }
     public override void GetParametersFromUser()
     {
-        Console.WriteLine("Выберите степень обжарки:");
+        Console.Clear();
+        Console.WriteLine("Выберите степень обжарки (по умолчаниню: Средняя):");
         Console.WriteLine("1. Светлая");
         Console.WriteLine("2. Средняя");
         Console.WriteLine("3. Темная");

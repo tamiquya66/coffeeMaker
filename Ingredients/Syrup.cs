@@ -5,20 +5,22 @@ public class Syrup : Ingredient
     {
         Flavor = flavor;
     }
-    public override void AddMessage(int i = 0)
+    public override void AddMessage()
     {
-        string padding = new string(' ', i * 2);
-        Console.WriteLine($"\n{padding} {Name}: {NetWeight}мл, Вкус: {Flavor}");
+        Console.WriteLine($"✓ Добавлен ингредиент: Сироп ({Flavor}): {NetWeight}мл");
     }
     public override void Display(int i = 0)
     {
+        string padding = new string(' ', i * 2);
+        Console.WriteLine($"{padding}Добавить Сироп ({Flavor}): {NetWeight}мл");
     }
     public override void Execute()
     {
     }
     public override void GetParametersFromUser()
     {
-        Console.Write("Введите вкус сиропа (Ваниль, Карамель, Фундук и т.д.): ");
+        Console.Clear();
+        Console.Write("Введите вкус сиропа (по умолчанию: Ваниль): ");
         string? flavor = Console.ReadLine();
         if (!string.IsNullOrWhiteSpace(flavor))
         {
