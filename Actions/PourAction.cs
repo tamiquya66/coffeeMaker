@@ -1,17 +1,34 @@
-public class PourAction : Action
+using System;
+
+namespace DrinkApp
 {
-    public string To { get; }
-    public PourAction(Ingredient ingredient, string to) : base("Переливание")
+    public class PourAction : Action
     {
-        To = to;
-    }
-    public override void Display(int i = 0)
-    {
-        string padding = new string(' ', i * 6);
-        Console.WriteLine($"{padding}{Name} {TargetIngredient.Name} → {To}");
-    }
-    public override void Execute()
-    {
-        Console.WriteLine($"{TargetIngredient.Name} пролита через {To}");
+        public string To { get; }
+
+        public PourAction(string to) : base("Перелить")
+        {
+            To = to;
+        }
+
+        public override void Display(int i = 0)
+        {
+            string padding = new string(' ', i * 2);
+            Console.WriteLine($"{padding} ▸ {Name} → {To}");
+
+            foreach (var element in _elements)
+            {
+                element.Display(i + 1);
+            }
+        }
+
+        public override void Execute()
+        {
+            Console.WriteLine($"Перелито в {To}");
+            foreach (var element in _elements)
+            {
+                element.Execute();
+            }
+        }
     }
 }

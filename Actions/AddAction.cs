@@ -1,33 +1,52 @@
-public class AddAction : Action
+using System;
+
+namespace DrinkApp
 {
-    private Ingredient _ingredient;
-    public AddAction(Ingredient ingredient) : base("Добавление", ingredient)
+    public class AddAction : Action
     {
-        _ingredient = ingredient;
-    }
-    public void AddElement(Element element)
-    {
-        _elements.Add(element);
-    }
-    public override void Display(int i = 0)
-    {
-        string padding = new string(' ', i * 2);
-        Console.Write($"{padding}");
-        _ingredient.Display(i);
-        
-        foreach (var element in _elements)
+        private Ingredient? _ingredient;
+
+        public Ingredient? TargetIngredient => _ingredient;
+
+        public AddAction(Ingredient ingredient) : base("Добавить")
         {
-            element.Display(i + 1);
+            _ingredient = ingredient;
         }
-    }
-    public override void Execute()
-    {
-        Console.WriteLine($"  Добавление {_ingredient.Name} ({_ingredient.NetWeight}г)");
-        _ingredient.AddMessage();
-        
-        foreach (var element in _elements)
+        public AddAction() : base("Добавить")
         {
-            element.Execute();
+            _ingredient = null;
+        }
+
+        public override void Display(int i = 0)
+        {
+            string padding = new string(' ', i * 2);
+            
+            if (_ingredient != null)
+            {
+                Console.WriteLine($"{padding}• {_ingredient.Name} ({_ingredient.NetWeight}г)");
+            }
+            else
+            {
+                Console.WriteLine($"{padding} {Name}");
+            }
+
+            foreach (var element in _elements)
+            {
+                element.Display(i + 1);
+            }
+        }
+
+        public override void Execute()
+        {
+            if (_ingredient != null)
+            {
+                _ingredient.AddMessage();
+            }
+
+            foreach (var element in _elements)
+            {
+                element.Execute();
+            }
         }
     }
 }

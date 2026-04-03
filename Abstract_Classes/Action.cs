@@ -1,22 +1,33 @@
-using DrinkApp;
-public abstract class Action : Element
+using System;
+
+namespace DrinkApp
 {
-    public virtual string Name { get; set; }
-    public Ingredient? TargetIngredient { get; protected set; }
-    protected List<Element> _elements = new List<Element>();
-    protected Action(string name, Ingredient? ingredient = null)
+    public abstract class Action : Element
     {
-        Name = name;
-        TargetIngredient = ingredient;
-    }
-    public virtual void AddElement(Element element)
-    {
-        _elements.Add(element);
-    }
-    public abstract void Display(int i = 0);
-    public abstract void Execute();
-    public void AddMessage() // 1st thing that appears when user adding
-    {
-        Console.WriteLine($"Действие: {Name}");
+        public virtual string Name { get; set; }
+        public List<Element> _elements = new List<Element>();
+
+        protected Action(string name)
+        {
+            Name = name;
+        }
+
+        public virtual void AddElement(Element element)
+        {
+            _elements.Add(element);
+        }
+
+        public void RemoveElement(Element element)
+        {
+            _elements.Remove(element);
+        }
+
+        public abstract void Display(int i = 0);
+        public abstract void Execute();
+
+        public void AddMessage()
+        {
+            Console.WriteLine($"Действие: {Name}");
+        }
     }
 }
