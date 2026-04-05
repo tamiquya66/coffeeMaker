@@ -77,6 +77,27 @@ namespace DrinkApp
             }
         }
 
+        public List<Action> GetActions()
+        {
+            List<Action> actions = new List<Action>();
+            if (_element is Action rootAction)
+            {
+                CollectActions(rootAction, actions);
+            }
+            return actions;
+        }
+
+        private void CollectActions(Action action, List<Action> actions)
+        {
+            foreach (var element in action._elements)
+            {
+                if (element is Action subAction)
+                {
+                    actions.Add(subAction);
+                    CollectActions(subAction, actions);
+                }
+            }
+        }
         public AddAction? FindAddAction(Ingredient ingredient)
         {
             if (_element is Action action)
@@ -102,7 +123,6 @@ namespace DrinkApp
             }
             return null;
         }
-
         public Action? GetRootAction()
         {
             if (_element is Action action)
@@ -110,11 +130,6 @@ namespace DrinkApp
                 return action;
             }
             return null;
-        }
-
-        public void DeleteElement()
-        {
-            
         }
     }
 }

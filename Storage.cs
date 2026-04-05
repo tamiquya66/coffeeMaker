@@ -1,6 +1,7 @@
+using System.Dynamic;
 using DrinkApp;
 
-class Storage
-{
-    List<Drink> Drinks = new List<Drink>();
+public static class Storage 
+{ 
+    public static List<Drink> Drinks { get; set; } = new List<Drink>(); 
 }

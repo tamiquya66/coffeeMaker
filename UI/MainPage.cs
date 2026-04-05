@@ -16,7 +16,8 @@ namespace DrinkApp
                 Console.WriteLine("3. Удаление ингредиента");
                 Console.WriteLine("4. Удаление действия");
                 Console.WriteLine("5. Показать рецепт");
-                Console.WriteLine("0. Выход");
+                Console.WriteLine("6. Сохранить и выйти");
+                Console.WriteLine("0. Назад");
                 Console.Write("\nВыберите действие: ");
 
                 string? choice = Console.ReadLine();
@@ -30,18 +31,19 @@ namespace DrinkApp
                         ActionMenu(drink);
                         break;
                     case "3":
-                        
+                        DeleteIngredient(drink);
                         break;
                     case "4":
-                        
+                        DeleteAction(drink);
                         break;
                     case "5":
                         drink.DisplayRecipe();
                         break;
+                    case "6":
+                        SaveAndExit(drink);
+                        return;
                     case "0":
-                        Console.WriteLine("До свидания!");
-                        Environment.Exit(0);
-                        break;
+                        return;
                     default:
                         Console.WriteLine("Некорректный выбор");
                         Console.ReadLine();
@@ -342,6 +344,135 @@ namespace DrinkApp
 
             Console.WriteLine("\nНажмите любую клавишу");
             Console.ReadLine();
+        }
+        public static void DeleteIngredient(Drink drink)
+        {
+            Console.Clear();
+            var ingredients = drink.GetIngredients();
+            
+            if (ingredients.Count == 0)
+            {
+                Console.WriteLine("Список ингредиентов пуст");
+                Console.ReadLine();
+                return;
+            }
+            
+            Console.WriteLine("~~~ Удаление ингредиента ~~~\n");
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {ingredients[i].Name} ({ingredients[i].NetWeight}г)");
+            }
+            
+            Console.Write("\nВыберите номер ингредиента для удаления: ");
+            if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > ingredients.Count)
+            {
+                Console.WriteLine("Неверный выбор!");
+                Console.ReadLine();
+                return;
+            }
+            
+            Ingredient selected = ingredients[choice - 1];
+            AddAction? addAction = drink.FindAddAction(selected);
+            
+            if (addAction != null)
+            {
+                var rootAction = drink.GetRootAction();
+                if (rootAction != null)
+                {
+                    rootAction.RemoveElement(addAction);
+                }
+                Console.WriteLine($"\n Ингредиент '{selected.Name}' и все его действия удалены");
+            }
+            else
+            {
+                Console.WriteLine("\nИнгредиент не найден в рецепте");
+            }
+            
+            Console.ReadLine();
+        }
+
+        public static void DeleteAction(Drink drink)
+        {
+            Console.Clear();
+            var ingredients = drink.GetIngredients();
+            
+            if (ingredients.Count == 0)
+            {
+                Console.WriteLine("Список ингредиентов пуст");
+                Console.ReadLine();
+                return;
+            }
+            
+            Console.WriteLine("~~~ Удаление действия ~~~\n");
+            Console.WriteLine("Выберите ингредиент:");
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {ingredients[i].Name}");
+            }
+            
+            Console.Write("\nВаш выбор: ");
+            if (!int.TryParse(Console.ReadLine(), out int ingChoice) || ingChoice < 1 || ingChoice > ingredients.Count)
+            {
+                Console.WriteLine("Неверный выбор");
+                Console.ReadLine();
+                return;
+            }
+            
+            Ingredient selected = ingredients[ingChoice - 1];
+            AddAction? addAction = drink.FindAddAction(selected);
+            
+            if (addAction == null || addAction._elements.Count == 0)
+            {
+                Console.WriteLine($"\nУ ингредиента '{selected.Name}' нет действий");
+                Console.ReadLine();
+                return;
+            }
+            
+            Console.Clear();
+            Console.WriteLine($"~~~ Действия для {selected.Name} ~~~\n");
+            
+            var actions = addAction._elements.OfType<Action>().ToList();
+            
+            for (int i = 0; i < actions.Count; i++)
+            {
+                string actionName = actions[i].GetType().Name;
+                
+                if (actions[i] is MixAction mix)
+                    actionName = $"Перемешать (скорость: {mix.Speed}, время: {mix.DurationSeconds})";
+                else if (actions[i] is BoilAction boil)
+                    actionName = $"Вскипятить (скорость: {boil.Temperature}, время: {boil.DurationMinutes})";
+                else if (actions[i] is PourAction pour)
+                    actionName = $"Пролить (куда: {pour.To})";
+                else if (actions[i] is GrindAction grind)
+                    actionName = $"Перемолоть (помол: {grind.GrindSize})";
+                else if (actions[i] is WhiskAction whisk)
+                    actionName = $"Взбить (скорость: {whisk.Speed}, время: {whisk.DurationSeconds})";
+                
+                Console.WriteLine($"{i + 1}. {actionName}");
+            }
+            
+            Console.Write("\nВыберите действие для удаления: ");
+            if (!int.TryParse(Console.ReadLine(), out int actChoice) || actChoice < 1 || actChoice > actions.Count)
+            {
+                Console.WriteLine("Неверный выбор");
+                Console.ReadLine();
+                return;
+            }
+            
+            Action selectedAction = actions[actChoice - 1];
+            addAction.RemoveElement(selectedAction);
+            
+            Console.WriteLine($"\n Действие '{selectedAction.Name}' удалено для ингредиента {selected.Name}");
+            Console.ReadLine();
+        }
+        public static void SaveAndExit(Drink drink)
+        {
+            Console.Clear();
+            Storage.Drinks.Add(drink);
+            Console.WriteLine($"Напиток {drink.Name} успешно сохранён");
+            Console.WriteLine("\nНажмите любую кнопку");
+            Console.ReadLine();
+            return;
         }
     }
 }
